@@ -1,0 +1,16 @@
+### Summary
+This PR improves the documentation for GitHub Models usage within the Node.js website system, integrating ERIFY™-style clarity and examples.
+
+### Changes
+- 🧠 Updated `/docs/content/github-models/use-github-models`
+- 🔗 Added ERIFY Cloudflare + GitHub Actions examples
+- 🧩 Improved formatting consistency and readability
+- 💎 Added note linking to ERIFY Node.js fork (`erifystudio/erify-nodejs.org`)
+
+### Motivation
+Part of the ERIFY™ Open Knowledge Initiative — making developer docs globally understandable, elegant, and consistent.
+
+---
+
+**Signed-off-by:** DC GERIZON 🧃🐐  
+Founder ERIFY Technologies
