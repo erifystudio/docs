@@ -1,0 +1,88 @@
+name: Docs CI Summary
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "docs/**"
+      - ".github/workflows/summary.yml"
+  pull_request:
+    paths:
+      - "docs/**"
+      - ".github/workflows/summary.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    name: Lint, Build, and Summarize
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install tooling
+        run: |
+          npm ci
+          # If your docs use a separate workspace/package, adjust paths accordingly.
+          # For markdown linting:
+          npm i -D markdownlint-cli
+
+      - name: Lint Markdown
+        run: npx markdownlint "docs/**/*.md" --ignore "docs/**/node_modules/**" || true
+        # Use `|| true` to avoid failing the job on warnings. Remove it to enforce linting.
+
+      - name: Build Docs
+        run: |
+          # Replace with your actual docs build command
+          # Examples:
+          # npx docusaurus build
+          # npx vite build
+          # npm run build
+          echo "No build command configured. Replace this step with your docs build."
+        shell: bash
+
+      - name: Upload Build Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-build
+          path: |
+            build
+            dist
+            docs
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Generate Summary
+        if: always()
+        run: |
+          {
+            echo "## Documentation CI Summary"
+            echo ""
+            echo "- Repository: \`${{ github.repository }}\`"
+            echo "- Workflow run: [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+            echo "- Event: \`${{ github.event_name }}\`"
+            echo "- Ref: \`${{ github.ref }}\`"
+            echo ""
+            echo "### Linting"
+            echo "- Markdown lint executed over \`docs/**/*.md\`."
+            echo ""
+            echo "### Build"
+            echo "- Replace the build step with your actual command if not using a static builder."
+            echo ""
+            echo "### Artifacts"
+            echo "- The \`docs-build\` artifact (if produced) is attached to this run."
+          } >> "$GITHUB_STEP_SUMMARY"
